@@ -13,7 +13,6 @@
 		F85395D3224ACB5700F19FA3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F85395D1224ACB5700F19FA3 /* Main.storyboard */; };
 		F85395D5224ACB5700F19FA3 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F85395D4224ACB5700F19FA3 /* Assets.xcassets */; };
 		F85395D8224ACB5700F19FA3 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = F85395D6224ACB5700F19FA3 /* LaunchScreen.storyboard */; };
-		F8A6684D224B0CF200A22585 /* Todoey.swift in Sources */ = {isa = PBXBuildFile; fileRef = F8A6684C224B0CF200A22585 /* Todoey.swift */; };
 		F8A66850224B390100A22585 /* DataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = F8A6684E224B390100A22585 /* DataModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
@@ -28,7 +27,6 @@
 		F85395D4224ACB5700F19FA3 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		F85395D7224ACB5700F19FA3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		F85395D9224ACB5700F19FA3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		F8A6684C224B0CF200A22585 /* Todoey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Todoey.swift; sourceTree = "<group>"; };
 		F8A6684F224B390100A22585 /* DataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = DataModel.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -96,7 +94,6 @@
 		F8A66851224B392000A22585 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				F8A6684C224B0CF200A22585 /* Todoey.swift */,
 				F8A6684E224B390100A22585 /* DataModel.xcdatamodeld */,
 			);
 			path = Models;
@@ -223,7 +220,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F8A6684D224B0CF200A22585 /* Todoey.swift in Sources */,
 				F8A66850224B390100A22585 /* DataModel.xcdatamodeld in Sources */,
 				F85395D0224ACB5700F19FA3 /* TodoListViewController.swift in Sources */,
 				F85395CE224ACB5700F19FA3 /* AppDelegate.swift in Sources */,

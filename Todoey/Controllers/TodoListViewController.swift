@@ -7,13 +7,12 @@
 //
 
 import UIKit
+import CoreData
 
-class TodoListViewController: UITableViewController {
+class TodoListViewController: UITableViewController, UISearchBarDelegate {
 
     var items: [Todoey] = []
-    
-    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        .first?.appendingPathComponent("Todoeys.plist")
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -49,7 +48,8 @@ class TodoListViewController: UITableViewController {
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             if let newItem = textField.text {
                 if !newItem.isEmpty {
-                    let todo = Todoey()
+                    
+                    let todo = Todoey(context: self.context)
                     todo.title = newItem
                     self.add(todoey: todo)
                 }
@@ -74,24 +74,40 @@ class TodoListViewController: UITableViewController {
     }
     
     func save() {
-        let encoder = PropertyListEncoder()
+        if context.hasChanges {
+            do {
+                try context.save()
+            } catch {
+                let nserror = error as NSError
+                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
+            }
+        }
+        tableView.reloadData()
+    }
+    
+    func loadTodoeys(with request: NSFetchRequest<Todoey> = Todoey.fetchRequest()) {
         do {
-            let data = try encoder.encode(items)
-            try data.write(to: dataFilePath!)
+            items = try context.fetch(request)
         } catch {
             print(error)
         }
         tableView.reloadData()
     }
     
-    func loadTodoeys() {
-        
-        do {
-            let data = try Data(contentsOf: dataFilePath!)
-            let decoder = PropertyListDecoder()
-            items = try decoder.decode([Todoey].self, from: data)
-        } catch {
-            print(error)
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        guard let searchText = searchBar.text else { return }
+        let request: NSFetchRequest<Todoey> = Todoey.fetchRequest()
+        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
+        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+        loadTodoeys(with: request)
+    }
+    
+    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
+        if searchBar.text?.count == 0 {
+            loadTodoeys()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
         }
     }
     
