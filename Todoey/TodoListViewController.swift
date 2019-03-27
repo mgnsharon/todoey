@@ -10,14 +10,14 @@ import UIKit
 
 class TodoListViewController: UITableViewController {
 
-    var items: [String] = []
-    let defaults = UserDefaults.standard
+    var items: [Todoey] = []
+    
+    let dataFilePath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        .first?.appendingPathComponent("Todoeys.plist")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if let todoeys = defaults.array(forKey: "Todoeys") as? [String] {
-            items = todoeys
-        }
+        loadTodoeys()
     }
 
     //MARK - TableView Datasource Methods
@@ -27,18 +27,18 @@ class TodoListViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ToDoItemCell", for: indexPath)
-        cell.textLabel?.text = items[indexPath.row]
+        let item = items[indexPath.row]
+        cell.textLabel?.text = item.title
+        cell.accessoryType = item.isComplete ? .checkmark : .none
+
         return cell
     }
     
     //MARK - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if tableView.cellForRow(at: indexPath)?.accessoryType == .checkmark {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .none
-        } else {
-            tableView.cellForRow(at: indexPath)?.accessoryType = .checkmark
-        }
-        
+        let item = items[indexPath.row]
+        item.isComplete = !item.isComplete
+        save()
         tableView.deselectRow(at: indexPath, animated: true)
     }
     
@@ -48,23 +48,50 @@ class TodoListViewController: UITableViewController {
         let alert = UIAlertController(title: "Add New Todoey Item", message: "", preferredStyle: .alert)
         let action = UIAlertAction(title: "Add Item", style: .default) { (action) in
             if let newItem = textField.text {
-                self.add(todoey: newItem)
+                if !newItem.isEmpty {
+                    let todo = Todoey()
+                    todo.title = newItem
+                    self.add(todoey: todo)
+                }
             }
         }
+        
         alert.addTextField { (alertTextField) in
             textField = alertTextField
             textField.placeholder = "Create New Todoey"
             
         }
+        
         alert.addAction(action)
         present(alert, animated: true, completion: nil)
     }
     
-    func add(todoey: String) {
-        if !todoey.isEmpty {
-            items.append(todoey)
-            tableView.reloadData()
-            defaults.set(items, forKey: "Todoeys")
+    func add(todoey: Todoey) {
+        
+        items.append(todoey)
+        save()
+        
+    }
+    
+    func save() {
+        let encoder = PropertyListEncoder()
+        do {
+            let data = try encoder.encode(items)
+            try data.write(to: dataFilePath!)
+        } catch {
+            print(error)
+        }
+        tableView.reloadData()
+    }
+    
+    func loadTodoeys() {
+        
+        do {
+            let data = try Data(contentsOf: dataFilePath!)
+            let decoder = PropertyListDecoder()
+            items = try decoder.decode([Todoey].self, from: data)
+        } catch {
+            print(error)
         }
     }
     
