@@ -11,12 +11,17 @@ import CoreData
 
 class TodoListViewController: UITableViewController, UISearchBarDelegate {
 
-    var items: [Todoey] = []
+    var items = [Todoey]()
+    var selectedCategory: Category? {
+        didSet {
+            loadTodoeys()
+        }
+    }
+    
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        loadTodoeys()
     }
 
     //MARK - TableView Datasource Methods
@@ -51,6 +56,7 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
                     
                     let todo = Todoey(context: self.context)
                     todo.title = newItem
+                    todo.category = self.selectedCategory
                     self.add(todoey: todo)
                 }
             }
@@ -85,7 +91,16 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
         tableView.reloadData()
     }
     
-    func loadTodoeys(with request: NSFetchRequest<Todoey> = Todoey.fetchRequest()) {
+    func loadTodoeys(with request: NSFetchRequest<Todoey> = Todoey.fetchRequest(), predicate: NSPredicate? = nil) {
+        
+        guard let category = selectedCategory?.name else { return }
+        let categoryPredicate = NSPredicate(format: "category.name MATCHES %@", category)
+        if let additionalPredicate = predicate {
+            request.predicate = NSCompoundPredicate(andPredicateWithSubpredicates: [categoryPredicate, additionalPredicate])
+        } else {
+            request.predicate = categoryPredicate
+        }
+        
         do {
             items = try context.fetch(request)
         } catch {
@@ -96,10 +111,18 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
     
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
-        let request: NSFetchRequest<Todoey> = Todoey.fetchRequest()
-        request.predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
-        request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
-        loadTodoeys(with: request)
+        if searchText.count > 0 {
+            let request: NSFetchRequest<Todoey> = Todoey.fetchRequest()
+            let predicate = NSPredicate(format: "title CONTAINS[cd] %@", searchText)
+            request.sortDescriptors = [NSSortDescriptor(key: "title", ascending: true)]
+            loadTodoeys(with: request, predicate: predicate)
+        } else {
+            loadTodoeys()
+            DispatchQueue.main.async {
+                searchBar.resignFirstResponder()
+            }
+        }
+        
     }
     
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {

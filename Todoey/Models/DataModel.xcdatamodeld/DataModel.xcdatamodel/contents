@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="14490.98" systemVersion="18D109" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="Category" representedClassName="Category" syncable="YES" codeGenerationType="class">
+        <attribute name="name" attributeType="String" syncable="YES"/>
+        <relationship name="todoeys" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Todoey" inverseName="category" inverseEntity="Todoey" syncable="YES"/>
+    </entity>
     <entity name="Todoey" representedClassName=".Todoey" syncable="YES" codeGenerationType="class">
         <attribute name="isComplete" attributeType="Boolean" defaultValueString="NO" usesScalarValueType="YES" syncable="YES"/>
         <attribute name="title" attributeType="String" syncable="YES"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="todoeys" inverseEntity="Category" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Todoey" positionX="-63" positionY="-18" width="128" height="75"/>
+        <element name="Todoey" positionX="140.5" positionY="14.671875" width="128" height="88"/>
+        <element name="Category" positionX="-83.8984375" positionY="23.453125" width="128" height="73"/>
     </elements>
 </model>
