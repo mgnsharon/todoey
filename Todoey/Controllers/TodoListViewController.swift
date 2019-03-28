@@ -91,7 +91,8 @@ class TodoListViewController: UITableViewController, UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         guard let searchText = searchBar.text else { return }
         if searchText.count > 0 {
-            items = items?.filter("title CONTAINS[cd] %@", searchText).sorted(byKeyPath: "title", ascending: true)
+            items = items?.filter("title CONTAINS[cd] %@", searchText).sorted(byKeyPath: "createdOn", ascending: true)
+            tableView.reloadData()
         } else {
             loadTodos()
             DispatchQueue.main.async {
