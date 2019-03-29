@@ -8,6 +8,7 @@
 
 import UIKit
 import RealmSwift
+import ChameleonFramework
 
 class TodoListViewController: SwipeTableViewController, UISearchBarDelegate {
 
@@ -19,8 +20,21 @@ class TodoListViewController: SwipeTableViewController, UISearchBarDelegate {
         }
     }
     
+    @IBOutlet weak var searchBar: UISearchBar!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        guard let category = selectedCategory else {return}
+        title = category.name
+        updateNavBar(withHexCode: category.color)
+        searchBar.barTintColor = UIColor(hexString: category.color)
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        updateNavBar(withHexCode: "#34495e")
     }
 
     //MARK - TableView Datasource Methods
@@ -30,9 +44,23 @@ class TodoListViewController: SwipeTableViewController, UISearchBarDelegate {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
-        if let item = items?[indexPath.row] {
+        
+        if let item = items?[indexPath.row],
+            let total = items?.count {
             cell.textLabel?.text = item.title
             cell.accessoryType = item.done ? .checkmark : .none
+            
+            let hexValue = item.category.first?.color ?? UIColor.flatGray.hexValue()
+            if let color = UIColor(hexString: hexValue) {
+                let darkify = CGFloat(indexPath.row) / CGFloat(total)
+                let darkColor = color.darken(byPercentage: darkify)
+                let contrastColor = ContrastColorOf(darkColor!, returnFlat: true)
+                cell.backgroundColor = darkColor
+                cell.textLabel?.textColor = contrastColor
+                cell.tintColor = contrastColor
+            }
+            
+            
         } else {
             cell.textLabel?.text = "No Todos Added..."
         }

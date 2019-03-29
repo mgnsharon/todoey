@@ -9,6 +9,7 @@
 import UIKit
 import RealmSwift
 import SwipeCellKit
+import ChameleonFramework
 
 class CategoryViewController: SwipeTableViewController {
 
@@ -18,6 +19,10 @@ class CategoryViewController: SwipeTableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         load()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        updateNavBar(withHexCode: "#34495e")
     }
     
     func load() {
@@ -46,13 +51,20 @@ class CategoryViewController: SwipeTableViewController {
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        
         cell.textLabel?.text = categories?[indexPath.row].name ?? "No Categories Created"
+        let bgHexValue = categories?[indexPath.row].color ?? UIColor.randomFlat.hexValue()
+        if let bgColor = UIColor(hexString: bgHexValue) {
+            cell.backgroundColor = bgColor
+            cell.textLabel?.textColor = ContrastColorOf(bgColor, returnFlat: true)
+        }
         return cell
     }
     
     //MARK - TableView Delegate Methods
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         performSegue(withIdentifier: "showTodoeys", sender: self)
+        tableView.deselectRow(at: indexPath, animated: true)
     }
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -72,6 +84,7 @@ class CategoryViewController: SwipeTableViewController {
                     let category = Category()
                     category.name = newItem
                     category.createdOn = Date()
+                    category.color = UIColor.randomFlat.hexValue()
                     self.save(category: category)
                 }
             }
